@@ -14,3 +14,4 @@ requires = [
     "cryptography<4",
 ]
 requires-python = ">=3.9"
+description-file="README.md"
