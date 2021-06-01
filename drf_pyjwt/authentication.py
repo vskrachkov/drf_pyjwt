@@ -15,6 +15,8 @@ log = logging.getLogger(__name__)
 class PyJWTAuthentication(TokenAuthentication):
     keyword = "Bearer"
 
+    _jwks_client = PyJWKClient(settings.DRF_PYJWT["JWKS_URI"])
+
     def authenticate_credentials(self, key: str) -> Tuple[Any, dict]:
         try:
             token: dict = self.decode_token(key)
@@ -25,8 +27,7 @@ class PyJWTAuthentication(TokenAuthentication):
         return (self.lookup_user(token), token)
 
     def decode_token(self, token: str) -> dict:
-        jwks_client = PyJWKClient(self.get_jwks_uri())
-        signing_key = jwks_client.get_signing_key_from_jwt(token)
+        signing_key = self._jwks_client.get_signing_key_from_jwt(token)
         return decode(
             jwt=token,
             key=signing_key.key,
@@ -42,10 +43,6 @@ class PyJWTAuthentication(TokenAuthentication):
             _lookup_user = import_string(import_str)
             return _lookup_user(token)
         return None
-
-    @staticmethod
-    def get_jwks_uri() -> str:
-        return settings.DRF_PYJWT["JWKS_URI"]
 
     @staticmethod
     def get_algorithms() -> Optional[list[str]]:
