@@ -1,17 +1,15 @@
 import logging
-from typing import Tuple, Any, Optional
+from typing import Tuple, Any, Optional, Callable
 
 import jwt.exceptions
 from django.conf import settings
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.utils.module_loading import import_string
 from jwt import PyJWKClient, decode
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 
 log = logging.getLogger(__name__)
-
-
-class StubUser:
-    is_authenticated = True
 
 
 class PyJWTAuthentication(TokenAuthentication):
@@ -24,7 +22,7 @@ class PyJWTAuthentication(TokenAuthentication):
             log.info(f"Token decode error: {exc}")
             raise AuthenticationFailed("Invalid token")
 
-        return (StubUser(), token)
+        return (self.lookup_user(token), token)
 
     def decode_token(self, token: str) -> dict:
         jwks_client = PyJWKClient(self.get_jwks_uri())
@@ -36,6 +34,14 @@ class PyJWTAuthentication(TokenAuthentication):
             options=self.get_options(),
             **self.get_kwargs(),
         )
+
+    @staticmethod
+    def lookup_user(token: dict) -> Optional[AbstractBaseUser]:
+        if import_str := settings.DRF_PYJWT.get("LOOKUP_USER"):
+            _lookup_user: Callable[[dict], Optional[AbstractBaseUser]]
+            _lookup_user = import_string(import_str)
+            return _lookup_user(token)
+        return None
 
     @staticmethod
     def get_jwks_uri() -> str:
