@@ -11,6 +11,9 @@ cryptography = "<4"
 
 [dev-packages]
 flit = "*"
+mypy = "0.812"
+django-stubs = "==1.7.0"
+djangorestframework-stubs = "==1.1.0"
 
 [requires]
 python_version = "3.9"

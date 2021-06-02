@@ -1,0 +1,1 @@
+DRF_PYJWT: dict = {}

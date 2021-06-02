@@ -7,4 +7,4 @@ class PyJWTAuthenticationTestCase(TestCase):
 
     def test_access_token(self):
         access_token_header = "Bearer {}"
-        request = APIRequestFactory().get('/', HTTP_AUTHORIZATION=access_token_header)
+        request = APIRequestFactory().get("/", HTTP_AUTHORIZATION=access_token_header)
