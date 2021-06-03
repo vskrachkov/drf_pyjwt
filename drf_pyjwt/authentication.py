@@ -1,5 +1,5 @@
 import logging
-from typing import Tuple, Any, Optional, Callable
+from typing import Tuple, Any, Optional, Callable, ClassVar
 
 import jwt
 from django.conf import settings
@@ -14,7 +14,17 @@ log = logging.getLogger(__name__)
 class PyJWTAuthentication(TokenAuthentication):
     keyword = "Bearer"
 
-    _jwks_client = jwt.PyJWKClient(settings.DRF_PYJWT["JWKS_URI"])
+    _jwks_client: ClassVar[Optional[jwt.PyJWKClient]] = None
+
+    @classmethod
+    def get_jwks_client(cls) -> jwt.PyJWKClient:
+        if not cls._jwks_client:
+            cls._jwks_client = jwt.PyJWKClient(settings.DRF_PYJWT["JWKS_URI"])
+        return cls._jwks_client
+
+    @classmethod
+    def clear_jwks_cache(cls) -> None:
+        cls._jwks_client = None
 
     def authenticate_credentials(self, key: str) -> Tuple[Any, dict]:
         try:
@@ -26,7 +36,7 @@ class PyJWTAuthentication(TokenAuthentication):
         return (self.lookup_user(token), token)
 
     def decode_token(self, token: str) -> dict:
-        signing_key = self._jwks_client.get_signing_key_from_jwt(token)
+        signing_key = self.get_jwks_client().get_signing_key_from_jwt(token)
         return jwt.decode(
             jwt=token,
             key=signing_key.key,
