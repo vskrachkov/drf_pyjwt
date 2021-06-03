@@ -1,11 +1,10 @@
 import logging
 from typing import Tuple, Any, Optional, Callable
 
-import jwt.exceptions
+import jwt
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.utils.module_loading import import_string
-from jwt import PyJWKClient, decode
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -15,7 +14,7 @@ log = logging.getLogger(__name__)
 class PyJWTAuthentication(TokenAuthentication):
     keyword = "Bearer"
 
-    _jwks_client = PyJWKClient(settings.DRF_PYJWT["JWKS_URI"])
+    _jwks_client = jwt.PyJWKClient(settings.DRF_PYJWT["JWKS_URI"])
 
     def authenticate_credentials(self, key: str) -> Tuple[Any, dict]:
         try:
@@ -28,7 +27,7 @@ class PyJWTAuthentication(TokenAuthentication):
 
     def decode_token(self, token: str) -> dict:
         signing_key = self._jwks_client.get_signing_key_from_jwt(token)
-        return decode(
+        return jwt.decode(
             jwt=token,
             key=signing_key.key,
             algorithms=self.get_algorithms(),
