@@ -8,7 +8,7 @@ author = "Vicheslav Krachkov"
 author-email = "vskrachkov@gmail.com"
 home-page = "https://github.com/vskrachkov/drf_pyjwt"
 requires = [
-    "pyjwt<3",
+    "pyjwt>=2.1,<3",
     "django>=3.1",
     "djangorestframework>=3.10",
     "cryptography<4",
