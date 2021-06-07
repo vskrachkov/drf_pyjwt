@@ -36,3 +36,36 @@ In `views.py` add `PyJWTAuthentication` class to authentication classes.
 def example(request: Request) -> Response:
     return Response({"some": "response"})
 ```
+
+# Settings Reference
+### DRF_PYJWT_JWKS_URI
+Required: `True`
+
+Type: `str`
+
+### DRF_PYJWT_ALGORITHMS
+Required: `False`
+
+Type: `List[str]`
+
+Default: `["RS256"]`
+
+Value which will be passed as `algorithms` argument to [pyjwt.jwt.decode](https://pyjwt.readthedocs.io/en/stable/api.html?highlight=decode#jwt.decode) function.
+
+### DRF_PYJWT_OPTIONS
+Required: `False`
+Type: `dict`
+
+Value which will be passed as `options` argument to [pyjwt.jwt.decode](https://pyjwt.readthedocs.io/en/stable/api.html?highlight=decode#jwt.decode) function.
+
+### DRF_PYJWT_KWARGS
+Required: `False`
+Type: `dict`
+
+Value which will be passed as `**kwargs` argument to [pyjwt.jwt.decode](https://pyjwt.readthedocs.io/en/stable/api.html?highlight=decode#jwt.decode) function.
+
+### DRF_PYJWT_LOOKUP_USER
+Required: `False`
+Type: `str`
+
+Import path to the `Callable[[dict], Optional[AbstractBaseUser]]`
