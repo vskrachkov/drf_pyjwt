@@ -31,10 +31,15 @@ In `views.py` add `PyJWTAuthentication` class to authentication classes.
 ``` 
 @api_view(["get"])
 @authentication_classes([PyJWTAuthentication])
-@permission_classes([])
 def example(request: Request) -> Response:
+    token: dict = request.auth
+    print("Access token: {token}")
     return Response({"some": "response"})
 ```
+
+By default `PyJWTAuthentication` cannot lookup user by token, that's why you will get `None` in `request.user`. 
+You can provide lookup user function using `DRF_PYJWT_LOOKUP_USER` setting. 
+After this `PyJWTAuthentication` will populate `request.user` using provided function.
 
 # Settings Reference
 ### DRF_PYJWT_JWKS_URI
