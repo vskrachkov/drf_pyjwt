@@ -7,7 +7,6 @@ A JSON Web Token authentication extension for the Django REST Framework
 [pypi-image]: https://img.shields.io/pypi/v/drf_pyjwt
 [pypi-url]: https://pypi.org/project/drf_pyjwt/
 
-
 # Installation
 
 Using pip
@@ -43,6 +42,8 @@ Required: `True`
 
 Type: `str`
 
+Value which will be passed as `uri` argument to [jwt.jwks_client.PyJWKClient]() function 
+
 ### DRF_PYJWT_ALGORITHMS
 Required: `False`
 
@@ -50,22 +51,37 @@ Type: `List[str]`
 
 Default: `["RS256"]`
 
-Value which will be passed as `algorithms` argument to [pyjwt.jwt.decode](https://pyjwt.readthedocs.io/en/stable/api.html?highlight=decode#jwt.decode) function.
+Example: `DRF_PYJWT_ALGORITHMS = "https://dev-87evx9ru.auth0.com/.well-known/jwks.json"`
+
+Value which will be passed as `algorithms` argument to [jwt.decode](https://pyjwt.readthedocs.io/en/stable/api.html?highlight=decode#jwt.decode) function.
 
 ### DRF_PYJWT_OPTIONS
 Required: `False`
+
 Type: `dict`
 
-Value which will be passed as `options` argument to [pyjwt.jwt.decode](https://pyjwt.readthedocs.io/en/stable/api.html?highlight=decode#jwt.decode) function.
+Example: `DRF_PYJWT_OPTIONS = {"verify_exp": False}`
+
+Value which will be passed as `options` argument to [jwt.decode](https://pyjwt.readthedocs.io/en/stable/api.html?highlight=decode#jwt.decode) function.
 
 ### DRF_PYJWT_KWARGS
 Required: `False`
+
 Type: `dict`
 
-Value which will be passed as `**kwargs` argument to [pyjwt.jwt.decode](https://pyjwt.readthedocs.io/en/stable/api.html?highlight=decode#jwt.decode) function.
+Example: `DRF_PYJWT_KWARGS = {"audience": "https://app.domain"}`
+
+Value which will be passed as `**kwargs` argument to [jwt.decode](https://pyjwt.readthedocs.io/en/stable/api.html?highlight=decode#jwt.decode) function.
 
 ### DRF_PYJWT_LOOKUP_USER
 Required: `False`
-Type: `str`
 
-Import path to the `Callable[[dict], Optional[AbstractBaseUser]]`
+Type: `str` (Import path to the `Callable[[dict], Optional[AbstractBaseUser]]`)
+
+Example:
+```
+def lookup_user(token: dict) -> Optional[AbstractBaseUser]:
+    user_id = token["custom_claim_user_id"]
+    user = User.objects.filter(pk=user_id).first()
+    return user
+```
