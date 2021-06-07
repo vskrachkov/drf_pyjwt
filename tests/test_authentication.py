@@ -13,15 +13,14 @@ _ANOTHER_JWKS_URI = "https://another-api.sample/jwks.json"
 
 
 @override_settings(
-    DRF_PYJWT={
-        "JWKS_URI": _JWKS_URI,
-        "ALGORITHMS": ["RS256"],
-        "KWARGS": {"audience": "https://app.domain"},
-    }
+    DRF_PYJWT_JWKS_URI=_JWKS_URI,
+    DRF_PYJWT_ALGORITHMS=["RS256"],
+    DRF_PYJWT_KWARGS={"audience": "https://app.domain"},
 )
 class PyJWTAuthenticationTestCase(SimpleTestCase):
     authentication: ClassVar[PyJWTAuthentication]
     expired_token: ClassVar[str]
+    valid_token: ClassVar[str]
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -38,7 +37,7 @@ class PyJWTAuthenticationTestCase(SimpleTestCase):
             key, aud="https://app.domain", iss="", exp=0, iat=0
         )
         cls.valid_token = jose.create_token(
-            key, aud="https://app.domain", iss="", exp=int(time.time()), iat=0
+            key, aud="https://app.domain", iss="", exp=int(time.time() + 300), iat=0
         )
 
         key = jose.create_key("1111")
@@ -79,13 +78,7 @@ class PyJWTAuthenticationTestCase(SimpleTestCase):
         with self.assertRaises(AuthenticationFailed):
             self.authentication.authenticate(request)
 
-    @override_settings(
-        DRF_PYJWT={
-            "JWKS_URI": _ANOTHER_JWKS_URI,
-            "ALGORITHMS": ["RS256"],
-            "KWARGS": {"audience": "https://app.domain"},
-        }
-    )
+    @override_settings(DRF_PYJWT_JWKS_URI=_ANOTHER_JWKS_URI)
     def test_jwt_signed_by_another_key(self) -> None:
         access_token_header = f"Bearer {self.valid_token}"
         request = RequestFactory().get("/", HTTP_AUTHORIZATION=access_token_header)
@@ -93,12 +86,7 @@ class PyJWTAuthenticationTestCase(SimpleTestCase):
             self.authentication.authenticate(request)
 
     @override_settings(
-        DRF_PYJWT={
-            "JWKS_URI": _JWKS_URI,
-            "ALGORITHMS": ["RS256"],
-            "KWARGS": {"audience": "https://app.domain"},
-            "LOOKUP_USER": "tests.test_authentication.return_anon_user",
-        }
+        DRF_PYJWT_LOOKUP_USER="tests.test_authentication.return_anon_user"
     )
     def test_lookup_user(self) -> None:
         access_token_header = f"Bearer {self.valid_token}"

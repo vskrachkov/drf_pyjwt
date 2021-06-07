@@ -22,11 +22,9 @@ Using pipenv
 In your project’s `settings.py` add these settings.
 
 ```
-DRF_PYJWT = {
-    "JWKS_URI": "https://api.sample/jwks.json",
-    "ALGORITHMS": ["RS256"],
-    "KWARGS": {"audience": "https://api.sample"},
-}
+DRF_PYJWT_JWKS_URI = "https://api.sample/jwks.json"
+DRF_PYJWT_ALGORITHMS = ["RS256"]
+DRF_PYJWT_KWARGS = {"audience": "https://api.sample"}
 ```
 
 In `views.py` add `PyJWTAuthentication` class to authentication classes.
