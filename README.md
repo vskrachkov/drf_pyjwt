@@ -47,6 +47,8 @@ Required: `True`
 
 Type: `str`
 
+Example: `DRF_PYJWT_JWKS_URI = "https://dev-87evx9ru.auth0.com/.well-known/jwks.json"`
+
 Value which will be passed as `uri` argument to [jwt.jwks_client.PyJWKClient]() function 
 
 ### DRF_PYJWT_ALGORITHMS
@@ -56,7 +58,7 @@ Type: `List[str]`
 
 Default: `["RS256"]`
 
-Example: `DRF_PYJWT_ALGORITHMS = "https://dev-87evx9ru.auth0.com/.well-known/jwks.json"`
+Example: `DRF_PYJWT_ALGORITHMS = ["RS256"]`
 
 Value which will be passed as `algorithms` argument to [jwt.decode](https://pyjwt.readthedocs.io/en/stable/api.html?highlight=decode#jwt.decode) function.
 
@@ -83,7 +85,7 @@ Required: `False`
 
 Type: `str` (Import path to the `Callable[[dict], Optional[AbstractBaseUser]]`)
 
-Example:
+Example: `DRF_PYJWT_LOOKUP_USER = "path.to.lookup_user"`
 ```
 def lookup_user(token: dict) -> Optional[AbstractBaseUser]:
     user_id = token["custom_claim_user_id"]
